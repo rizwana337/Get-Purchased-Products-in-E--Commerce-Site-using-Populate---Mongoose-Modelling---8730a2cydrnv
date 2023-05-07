@@ -1,76 +1,35 @@
 const User = require('../models/User');
 
 /*
-You need to write a controller function that fetches all the products purchased by a user from the database. 
-The function should take a user ID in the request body and use it to find the corresponding user object from the database using findById method. 
-Once the user object is obtained, the function should populate the productsPurchased field of the user object using the populate method. 
-Finally, the function should return the products purchased by the user in the response along with a success message. 
-If the user ID provided in the request is invalid, the function should return an error message with a 404 status code. 
-If there is any other error while fetching the data from the database, the function should return an error message with a 400 status code.
-The sample input and output for the controller function are as follows:
-Sample Input:
+You should write a controller function that adds a product to a user's purchased products. 
+The controller should take in a request object that contains the user ID and product ID in the request body. 
+It should then fetch the user object from the database using the user ID, check if the user exists, and add the product ID to the user's list of purchased products. Finally, it should save the updated user object to the database and return a success message along with the updated user object. 
+If the user doesn't exist, the controller should return an error message with a 404 status code.
+If there is any other error, the controller should return an error message with a 400 status code.
+Sample input to the controller should be:
 {
-    "userId": "640703441e67ce712d52d3b5"
+    "userId": "1234567890",
+    "productId": "0987654321"
 }
-Sample Output:
+Sample output from the controller should be:
 {
     "status": "success",
-    "message": "Products Purchased by User",
+    "message": "Product Purchased Successfully",
     "data": {
-        "products": [
-            {
-                "_id": "640703441e67ce712d5adbe4",
-                "name": "Product 1",
-                "description": "This is product 1",
-                "price": 100,
-                "category": "Category 1",
-                "createdAt": "2023-03-06T14:00:00.000Z",
-                "__v": 0
-            },
-            {
-                "_id": "640703441e67ce712d52d3cb",
-                "name": "Product 2",
-                "description": "This is product 2",
-                "price": 200,
-                "category": "Category 2",
-                "createdAt": "2023-03-06T14:10:00.000Z",
-                "__v": 0
-            }
-        ]
+        "user": {
+            "_id": "1234567890",
+            "username": "johndoe",
+            "email": "johndoe@example.com",
+            "productsPurchased": [
+                "0987654321"
+            ],
+            "createdAt": "2023-03-06T14:00:00.000Z",
+            "updatedAt": "2023-03-06T14:10:00.000Z",
+            "__v": 1
+        }
     }
 }
 */
-
-const getProductsPurchasedByUser = async (req, res) => {
-    try {
-        const { userId } = req.body;
-        const user = await User.findById(userId).populate('productsPurchased');
-
-        if (!user) {
-            return res.status(404).json({
-                message: "User not found",
-                status: "Error",
-            });
-        }
-
-        console.log(user.productsPurchased);
-        res.status(200).json({
-            message: "Products Purchased by User",
-            status: "success",
-            data: {
-                products: user.productsPurchased
-            }
-        });
-    } catch (err) {
-        res.status(400).json({
-            message: "Couldn't Fetch the Data",
-            status: "Error",
-            error: err,
-        });
-    }
-}
-
-// Adds a product to a user's purchased products array
 const addProductToUser = async (req, res) => {
     try {
         const { userId, productId } = req.body;
@@ -252,4 +211,5 @@ const deleteUser = async (req, res) => {
 };
 
 
-module.exports = { addProductToUser, getAllUsers, getUserByID, createUser, updateUser, deleteUser, getProductsPurchasedByUser };
+module.exports = { addProductToUser, getAllUsers, getUserByID, createUser, updateUser, deleteUser };
+
