@@ -7,7 +7,6 @@ Once the user object is obtained, the function should populate the productsPurch
 Finally, the function should return the products purchased by the user in the response along with a success message. 
 If the user ID provided in the request is invalid, the function should return an error message with a 404 status code. 
 If there is any other error while fetching the data from the database, the function should return an error message with a 400 status code.
-
 The sample input and output for the controller function are as follows:
 Sample Input:
 {
@@ -44,7 +43,24 @@ Sample Output:
 
 const getProductsPurchasedByUser = async (req, res) => {
     try {
-        //Write the code to fetch all the products purchased by a user from the database
+        const { userId } = req.body;
+        const user = await User.findById(userId).populate('productsPurchased');
+
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found",
+                status: "Error",
+            });
+        }
+
+        console.log(user.productsPurchased);
+        res.status(200).json({
+            message: "Products Purchased by User",
+            status: "success",
+            data: {
+                products: user.productsPurchased
+            }
+        });
     } catch (err) {
         res.status(400).json({
             message: "Couldn't Fetch the Data",
@@ -237,4 +253,3 @@ const deleteUser = async (req, res) => {
 
 
 module.exports = { addProductToUser, getAllUsers, getUserByID, createUser, updateUser, deleteUser, getProductsPurchasedByUser };
-
